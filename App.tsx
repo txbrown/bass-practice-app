@@ -20,9 +20,10 @@ import {
   Text,
   StatusBar,
 } from 'react-native';
-import ProfileScreen from './screens/ProfileScreen.tsx';
+import ProfileScreen from './screens/ProfileScreen';
 import HomeScreen from './screens/HomeScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Provider as PaperProvider} from 'react-native-paper';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -48,34 +49,36 @@ function ProfileStackScreen() {
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName;
+    <PaperProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({route}) => ({
+            tabBarIcon: ({focused, color, size}) => {
+              let iconName;
 
-            if (route.name === 'Home') {
-              iconName = focused
-                ? 'ios-information-circle'
-                : 'ios-information-circle-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused
-                ? 'person-circle-outline'
-                : 'person-circle-outline';
-            }
+              if (route.name === 'Home') {
+                iconName = focused
+                  ? 'ios-information-circle'
+                  : 'ios-information-circle-outline';
+              } else if (route.name === 'Profile') {
+                iconName = focused
+                  ? 'person-circle-outline'
+                  : 'person-circle-outline';
+              }
 
-            // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: 'tomato',
-          inactiveTintColor: 'gray',
-        }}>
-        <Tab.Screen name="Home" component={HomeStackScreen} />
-        <Tab.Screen name="Profile" component={ProfileStackScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+              // You can return any component that you like here!
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+          })}
+          tabBarOptions={{
+            activeTintColor: 'tomato',
+            inactiveTintColor: 'gray',
+          }}>
+          <Tab.Screen name="Home" component={HomeStackScreen} />
+          <Tab.Screen name="Profile" component={ProfileStackScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 };
 
