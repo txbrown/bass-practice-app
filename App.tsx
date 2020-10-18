@@ -7,23 +7,16 @@
  *
  * @format
  */
-import 'react-native-gesture-handler';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-import ProfileScreen from './screens/ProfileScreen';
-import HomeScreen from './screens/HomeScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import 'react-native-gesture-handler';
 import {Provider as PaperProvider} from 'react-native-paper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {theme} from './lib/theme';
+import HomeScreen from './screens/HomeScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 declare const global: {HermesInternal: null | {}};
 
@@ -33,8 +26,20 @@ const ProfileStack = createStackNavigator();
 
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="Home" component={HomeScreen} />
+    <HomeStack.Navigator headerMode="none">
+      <HomeStack.Screen
+        options={{
+          cardStyle: {
+            backgroundColor: 'black',
+            paddingTop: 32,
+          },
+          headerStyle: {
+            backgroundColor: 'black',
+          },
+        }}
+        name="Home"
+        component={HomeScreen}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -49,17 +54,15 @@ function ProfileStackScreen() {
 
 const App = () => {
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({route}) => ({
             tabBarIcon: ({focused, color, size}) => {
-              let iconName;
+              let iconName = '';
 
               if (route.name === 'Home') {
-                iconName = focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline';
+                iconName = 'musical-notes-outline';
               } else if (route.name === 'Profile') {
                 iconName = focused
                   ? 'person-circle-outline'
@@ -71,7 +74,7 @@ const App = () => {
             },
           })}
           tabBarOptions={{
-            activeTintColor: 'tomato',
+            activeTintColor: theme.colors.primary,
             inactiveTintColor: 'gray',
           }}>
           <Tab.Screen name="Home" component={HomeStackScreen} />

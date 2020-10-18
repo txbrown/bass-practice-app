@@ -1,35 +1,40 @@
-import styled from 'styled-components/native';
-import {
-  Text,
-  SafeAreaView,
-  StatusBar,
-  View,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
-import Animated from 'react-native-reanimated';
 import * as React from 'react';
-import {
-  TabView,
-  SceneMap,
-  TabBarProps,
-  ScrollPager,
-} from 'react-native-tab-view';
-import {Title} from 'react-native-paper';
-import TabBarItem from '../components/TabBarItem';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {format} from 'date-fns';
+import {Caption} from 'react-native-paper';
+import {
+  NavigationState,
+  Route,
+  SceneMap,
+  SceneRendererProps,
+  TabBar,
+  TabView,
+} from 'react-native-tab-view';
+import LessonCard from '../components/LessonCard';
+import PlanProgress from '../components/PlanProgress';
+import Quote from '../components/Quote';
+import TabBarItem from '../components/TabBarItem';
+import {courses} from '../lib/courses';
 
 const styles = StyleSheet.create({
   scene: {
     flex: 1,
     height: '100%',
     width: '100%',
+    padding: 16,
   },
 });
 
 const FirstRoute = () => (
-  <View style={[styles.scene, {backgroundColor: '#673ab7'}]} />
+  <View style={[styles.scene]}>
+    <Caption>TODAY</Caption>
+    <Quote>
+      Today's effort makes you who you'll be tomorrow. Give it your best.
+    </Quote>
+
+    <Caption>Training session</Caption>
+    <LessonCard />
+  </View>
 );
 
 const SecondRoute = () => (
@@ -39,12 +44,6 @@ const SecondRoute = () => (
 const initialLayout = {
   width: Dimensions.get('window').width,
 };
-
-const TabBar = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
 
 const HomeScreen = () => {
   const [index, setIndex] = React.useState(0);
@@ -68,26 +67,17 @@ const HomeScreen = () => {
     sun: FirstRoute,
   });
 
-  const renderTabBar = (props: any) => {
+  const renderTabBar = (
+    props: SceneRendererProps & {
+      navigationState: NavigationState<Route>;
+    },
+  ) => {
     return (
-      <TabBar>
-        {props.navigationState.routes.map((route: any, i: number) => {
-          const inputRange = props.navigationState.routes.map(
-            (x: number, i: number) => i,
-          );
-          const color = Animated.color(
-            Animated.round(
-              Animated.interpolate(props.position, {
-                inputRange,
-                outputRange: inputRange.map((inputIndex: number) =>
-                  inputIndex === i ? 255 : 0,
-                ),
-              }),
-            ),
-            0,
-            0,
-          );
-
+      <TabBar
+        {...props}
+        style={{backgroundColor: 'black'}}
+        renderTabBarItem={({route}) => {
+          const i = routes.findIndex((r) => r.key === route.key);
           const today = new Date();
           // coerce sunday to 7
           const weekDay = today.getDay() || 7;
@@ -98,32 +88,36 @@ const HomeScreen = () => {
           };
 
           return (
-            <TouchableOpacity onPress={() => setIndex(i)} key={props.key}>
-              {index === i && (
-                <Animated.View style={{backgroundColor: 'red', height: 16}} />
-              )}
-              <Animated.Text style={{color}}>
-                <TabBarItem
-                  title={index !== i ? route.title : '16/10'}
-                  status={getStatus()}
-                />
-              </Animated.Text>
+            <TouchableOpacity onPress={() => setIndex(i)} key={route.key}>
+              <TabBarItem
+                title={index !== i ? route.title : '16/10'}
+                status={getStatus()}
+              />
             </TouchableOpacity>
           );
-        })}
-      </TabBar>
+        }}></TabBar>
     );
   };
 
   return (
-    <TabView
-      renderTabBar={renderTabBar}
-      navigationState={{index, routes}}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={initialLayout}
-      // renderPager={(props) => <ScrollPager {...props} />}
-    />
+    <View style={{flex: 1}}>
+      <View style={{padding: 16}}>
+        <PlanProgress
+          userPlan={{
+            sessionsCompleted: 7,
+            sessionsCount: 48,
+            title: courses[6],
+          }}
+        />
+      </View>
+      <TabView
+        renderTabBar={renderTabBar}
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={initialLayout}
+      />
+    </View>
   );
 };
 

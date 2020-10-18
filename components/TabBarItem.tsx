@@ -1,13 +1,15 @@
 import * as React from 'react';
 import {Caption} from 'react-native-paper';
-import styled from 'styled-components/native';
+import {Theme} from 'react-native-paper/lib/typescript/src/types';
 import Icon from 'react-native-vector-icons/Ionicons';
+import styled from 'styled-components/native';
+import {theme} from '../lib/theme';
 
 type Status = 'today' | 'completed' | 'empty';
 
 interface ITabBarItemProps {
   status: Status;
-  title: string;
+  title?: string;
 }
 
 const Wrapper = styled.View`
@@ -15,8 +17,9 @@ const Wrapper = styled.View`
   padding: 16px;
 `;
 
-const Dot = styled.View<{selected?: boolean}>`
-  background: ${(props) => (props.selected ? 'blue' : 'transparent')};
+const Dot = styled.View<{selected?: boolean} & Theme>`
+  background: ${(props) =>
+    props.selected ? theme.colors.primary : 'transparent'};
   width: 10px;
   height: 10px;
   border-radius: 25px;
@@ -25,13 +28,13 @@ const Dot = styled.View<{selected?: boolean}>`
   ${(props) =>
     props.selected &&
     `
-  border-color: blue;
+  border-color: ${theme.colors.primary};
   `}
 
   ${(props) =>
     !props.selected &&
     `
-  border-color: black;
+  border-color: white;
   `}
 `;
 
@@ -61,7 +64,7 @@ const TabBarItem: React.FunctionComponent<ITabBarItemProps> = ({
     <Wrapper>
       {(isEmpty || isToday) && <Dot selected={isToday} />}
       {isCompledted && <CheckMark />}
-      <Caption>{title}</Caption>
+      <Caption style={{color: 'white'}}>{title}</Caption>
     </Wrapper>
   );
 };
