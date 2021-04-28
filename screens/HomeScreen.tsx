@@ -10,11 +10,13 @@ import {
   TabBar,
   TabView,
 } from 'react-native-tab-view';
+import Box from '../components/Box';
+import Container from '../components/Container';
 import LessonCard from '../components/LessonCard';
 import PlanProgress from '../components/PlanProgress';
 import Quote from '../components/Quote';
 import TabBarItem from '../components/TabBarItem';
-import {courses} from '../lib/courses';
+import {userPlan} from '../lib/mock-data/plans';
 
 const styles = StyleSheet.create({
   scene: {
@@ -23,7 +25,40 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 16,
   },
+  tabBar: {backgroundColor: 'black'},
 });
+
+const initialLayout = {
+  width: Dimensions.get('window').width,
+};
+
+const defaultRoutes = [
+  {key: 'mon', title: 'MON'},
+  {key: 'tue', title: 'TUE'},
+  {key: 'wed', title: 'WED'},
+  {key: 'thu', title: 'THU'},
+  {key: 'fri', title: 'FRI'},
+  {key: 'sat', title: 'SAT'},
+  {key: 'sun', title: 'SUN'},
+];
+
+export const getTabBarItemTitle = (
+  currentIndex: number,
+  index: number,
+  route: Route,
+  day: number,
+  month: number,
+): string | undefined => {
+  return currentIndex !== index ? route.title : `${day}/${month}`;
+};
+
+export const getStatus = (weekDay: number, index: number) => {
+  if (weekDay === index + 1) {
+    return 'today';
+  }
+
+  return 'empty';
+};
 
 const FirstRoute = () => (
   <View style={[styles.scene]}>
@@ -38,24 +73,12 @@ const FirstRoute = () => (
 );
 
 const SecondRoute = () => (
-  <View style={[styles.scene, {backgroundColor: '#ff4081'}]} />
+  <Box style={[styles.scene]} backgroundColor="#ff4081" />
 );
 
-const initialLayout = {
-  width: Dimensions.get('window').width,
-};
-
 const HomeScreen = () => {
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    {key: 'mon', title: 'MON'},
-    {key: 'tue', title: 'TUE'},
-    {key: 'wed', title: 'WED'},
-    {key: 'thu', title: 'THU'},
-    {key: 'fri', title: 'FRI'},
-    {key: 'sat', title: 'SAT'},
-    {key: 'sun', title: 'SUN'},
-  ]);
+  const [currentIndex, setCurrentIndex] = React.useState<number>(0);
+  const [routes] = React.useState(defaultRoutes);
 
   const renderScene = SceneMap({
     mon: FirstRoute,
@@ -75,49 +98,50 @@ const HomeScreen = () => {
     return (
       <TabBar
         {...props}
-        style={{backgroundColor: 'black'}}
+        style={styles.tabBar}
         renderTabBarItem={({route}) => {
-          const i = routes.findIndex((r) => r.key === route.key);
+          const index = routes.findIndex((r) => r.key === route.key);
           const today = new Date();
           // coerce sunday to 7
           const weekDay = today.getDay() || 7;
 
-          const getStatus = () => {
-            if (weekDay === i + 1) return 'today';
-            return 'empty';
-          };
+          const day = today.getDate();
+          const month = today.getMonth() + 1;
 
           return (
-            <TouchableOpacity onPress={() => setIndex(i)} key={route.key}>
+            <TouchableOpacity
+              onPress={() => setCurrentIndex(index)}
+              key={route.key}>
               <TabBarItem
-                title={index !== i ? route.title : '16/10'}
-                status={getStatus()}
+                title={getTabBarItemTitle(
+                  currentIndex,
+                  index,
+                  route,
+                  day,
+                  month,
+                )}
+                status={getStatus(weekDay, index)}
               />
             </TouchableOpacity>
           );
-        }}></TabBar>
+        }}
+      />
     );
   };
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{padding: 16}}>
-        <PlanProgress
-          userPlan={{
-            sessionsCompleted: 7,
-            sessionsCount: 48,
-            title: courses[6],
-          }}
-        />
-      </View>
+    <Container>
+      <Box p={16}>
+        <PlanProgress userPlan={userPlan} />
+      </Box>
       <TabView
         renderTabBar={renderTabBar}
-        navigationState={{index, routes}}
+        navigationState={{index: currentIndex, routes}}
         renderScene={renderScene}
-        onIndexChange={setIndex}
+        onIndexChange={setCurrentIndex}
         initialLayout={initialLayout}
       />
-    </View>
+    </Container>
   );
 };
 

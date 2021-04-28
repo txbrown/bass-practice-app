@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Caption} from 'react-native-paper';
-import {Theme} from 'react-native-paper/lib/typescript/src/types';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styled from 'styled-components/native';
 import {theme} from '../lib/theme';
@@ -17,7 +16,11 @@ const Wrapper = styled.View`
   padding: 16px;
 `;
 
-const Dot = styled.View<{selected?: boolean} & Theme>`
+interface DotProps {
+  selected?: boolean;
+}
+
+const Dot = styled.View<DotProps>`
   background: ${(props) =>
     props.selected ? theme.colors.primary : 'transparent'};
   width: 10px;
@@ -44,6 +47,10 @@ const CheckMarkWrapper = styled.View`
   padding: 8px;
 `;
 
+const StyledCaption = styled(Caption)`
+  color: white;
+`;
+
 const CheckMark = () => {
   return (
     <CheckMarkWrapper>
@@ -58,13 +65,13 @@ const TabBarItem: React.FunctionComponent<ITabBarItemProps> = ({
 }) => {
   const isToday = status === 'today';
   const isEmpty = status === 'empty';
-  const isCompledted = status === 'completed';
+  const isCompleted = status === 'completed';
 
   return (
     <Wrapper>
       {(isEmpty || isToday) && <Dot selected={isToday} />}
-      {isCompledted && <CheckMark />}
-      <Caption style={{color: 'white'}}>{title}</Caption>
+      {isCompleted && <CheckMark />}
+      <StyledCaption>{title}</StyledCaption>
     </Wrapper>
   );
 };
