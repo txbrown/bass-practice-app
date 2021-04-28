@@ -32,7 +32,7 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 
-const defaultRoutes = [
+export const defaultRoutes = [
   {key: 'mon', title: 'MON'},
   {key: 'tue', title: 'TUE'},
   {key: 'wed', title: 'WED'},
